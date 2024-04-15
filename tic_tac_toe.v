@@ -1,6 +1,6 @@
 `timescale 1 ns / 100 ps
 
-module mtic_tac_toe (Ain, Bin, Start, Ack, Clk, Reset, 
+module tic_tac_toe (Ain, Bin, Start, Ack, Clk, Reset, 
 				Flag, Qi, Qc, Qd, A);
 
 input [11:0] Ain, Bin;
