@@ -14,8 +14,7 @@ output Owins;  				 // Flag for when O wins
 
 // Rest are wire by default
 reg [6:0] state;			 // States
-reg [2:0] Xcounter;			 // Keeps track of how many moves X has played
-reg {2:0} Ocounter;			 // Keeps track of how many moves O has played *MIGHT NOT NEED THIS
+reg [3:0] counter;			 // Keeps track of number of moves played
 reg xCoord;					 // X coordinate of the board
 reg yCoord;					 // Y coordinate of the board
 reg Xwins;					 // Flag for when X wins
@@ -31,6 +30,7 @@ XWA	 = 7'b0001000,
 OTU  = 7'b0010000,
 OWA  = 7'b0100000,
 DONE = 7'b1000000;
+UNK  = 7'bXXXXXXX;
 
 assign {Qi, Qs, Qx, Qxw, Qo, Qow, Qd} = state;
 
@@ -42,8 +42,7 @@ always @(posedge Clk, posedge Reset)
           state <= INI;
 	      P1s <= 12'bXXXXXXXXXXXX;      // to avoid recirculating mux controlled by Reset
 	      P2s <= 12'bXXXXXXXXXXXX;	    // to avoid recirculating mux controlled by Reset 
-          Xcounter <= 3'bXXX;           // to avoid recirculating mux controlled by Reset
-          Ocounter <= 3'bXXX;           // to avoid recirculating mux controlled by Reset
+          counter <= 4'bXXX;           // to avoid recirculating mux controlled by Reset
 	    end
     else
        begin
@@ -63,37 +62,39 @@ always @(posedge Clk, posedge Reset)
 		         // state transitions in the control unit
 				 state <= XTU;
 		         // RTL operations in the Data Path
-				 Xcounter <= 0;
-				 Ocounter <= 0;
+				 counter <= 0;
 				 Xwins <= 0;
 				 Owins <= 0;
  	          end
 			XTU	:  // X's turn and check if winner
 			   begin
 				// state transitions in the control unit
-				if ((Xcounter == 4) || (Xwins == 1) || (Owins == 1))
+				if ((counter == 9) || (Xwins == 1) || (Owins == 1))
 					state <= Done;
-				else 
+				if(counter[0])
 					state <= OTU;
 				// RTL operations in the Data Path 		           
-				Xcounter <= Xcounter + 1;		 
+				if()
+				counter <= counter + 1;		 
 			   end
 			OTU	:  // O's turn and check if winner
 			   begin
 				// state transitions in the control unit
 				if ((Xwins == 1) || (Owins == 1))
 					state <= Done;
-				else 
+				if (~counter[0])
 					state <= XTU;
 				// RTL operations in the Data Path
-				Ocounter <= Ocounter + 1;	 
+				counter <= counter + 1;	 
 			   end
 	        DONE	:
 	          begin  
 		         // state transitions in the control unit
 		         if (Ack)
 		           state <= INI;
-		       end    
+		       end
+			default:
+				state <= UNK;
       endcase
     end 
   end
