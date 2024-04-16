@@ -1,11 +1,11 @@
 `timescale 1 ns / 100 ps
 
 module tic_tac_toe (Start, Ack, Clk, Reset, 
-				Xwins, Owins, Qi, Qs, Qx, Qo, Qd, P1s, P2s);
+				Xwins, Owins, Qi, Qs, Qx, Qxw, Qo, Qow, Qd, P1s, P2s);
 
 input Start, Ack, Clk, Reset;
 
-output Qi, Qs, Qx, Qo, Qd;   // States
+output Qi, Qs, Qx, Qxw, Qo, Qow, Qd;   // States
 output [11:0] P1s;           // Player 1 score
 output [11:0] P2s;           // Player 2 score
 output Xwins;  				 // Flag for when X wins
@@ -13,22 +13,26 @@ output Owins;  				 // Flag for when O wins
 
 
 // Rest are wire by default
-reg [4:0] state;			 // States
+reg [6:0] state;			 // States
 reg [2:0] Xcounter;			 // Keeps track of how many moves X has played
 reg {2:0} Ocounter;			 // Keeps track of how many moves O has played *MIGHT NOT NEED THIS
+reg xCoord;					 // X coordinate of the board
+reg yCoord;					 // Y coordinate of the board
 reg Xwins;					 // Flag for when X wins
 reg Owins;					 // Flag for when O wins
 
 reg board [0:2] [0:2]		 // 2D array that is 3 X 3 with each cell holding a single bit
 
 localparam
-INI	 = 5'b00001,
-STA  = 5'b00010,
-XTU	 = 5'b00100,
-OTU  = 5'b01000,
-DONE = 5'b10000;
+INI	 = 7'b0000001,
+STA  = 7'b0000010,
+XTU	 = 7'b0000100,
+XWA	 = 7'b0001000,
+OTU  = 7'b0010000,
+OWA  = 7'b0100000,
+DONE = 7'b1000000;
 
-assign {Qd, Qo, Qx, Qs, Qi} = state;
+assign {Qi, Qs, Qx, Qxw, Qo, Qow, Qd} = state;
 
 always @(posedge Clk, posedge Reset) 
 
@@ -51,16 +55,18 @@ always @(posedge Clk, posedge Reset)
 		         if (Start)
 		           state <= STA;
 		         // RTL operations in the DPU (Data Path Unit) 
-		           P1s <= 0;
-		           P2s <= 0;
+				P1s <= 0;
+				P2s <= 0;
 	          end
 	        STA	:  // Clear Board and Reset counter registers for O and X turns
 	          begin
 		         // state transitions in the control unit
 				 state <= XTU;
-		         // RTL operations in the Data Path 		           
-				 Xcounter <= 0;	
-				 Ocounter <= 0;	 
+		         // RTL operations in the Data Path
+				 Xcounter <= 0;
+				 Ocounter <= 0;
+				 Xwins <= 0;
+				 Owins <= 0;
  	          end
 			XTU	:  // X's turn and check if winner
 			   begin
@@ -79,9 +85,8 @@ always @(posedge Clk, posedge Reset)
 					state <= Done;
 				else 
 					state <= XTU;
-				// RTL operations in the Data Path 		           
-				Xcounter <= 0;	
-				Ocounter <= 0;	 
+				// RTL operations in the Data Path
+				Ocounter <= Ocounter + 1;	 
 			   end
 	        DONE	:
 	          begin  
