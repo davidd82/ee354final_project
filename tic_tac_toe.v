@@ -50,21 +50,21 @@ always @(posedge Clk, posedge Reset)
          case (state)
 	        INI	: // Show Board on screen and reset scores for each player
 	          begin
-		         // state transitions in the control unit
-		         if (Start)
-		           state <= STA;
-		         // RTL operations in the DPU (Data Path Unit) 
+		        // state transitions in the control unit
+		        if (Start)
+		          state <= STA;
+		        // RTL operations in the DPU (Data Path Unit) 
 				P1s <= 0;
 				P2s <= 0;
 	          end
 	        STA	:  // Clear Board and Reset counter registers for O and X turns
 	          begin
-		         // state transitions in the control unit
-				 state <= XTU;
-		         // RTL operations in the Data Path
-				 counter <= 0;
-				 Xwins <= 0;
-				 Owins <= 0;
+		        // state transitions in the control unit
+				state <= XTU;
+		        // RTL operations in the Data Path
+				counter <= 0;
+				Xwins <= 0;
+				Owins <= 0;
  	          end
 			XTU	:  // X's turn and check if winner
 			   begin
@@ -74,8 +74,8 @@ always @(posedge Clk, posedge Reset)
 				if(counter[0])
 					state <= OTU;
 				// RTL operations in the Data Path 		           
-				if()
-				counter <= counter + 1;		 
+				
+				counter <= counter + 1;
 			   end
 			OTU	:  // O's turn and check if winner
 			   begin
