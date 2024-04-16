@@ -103,4 +103,4 @@ def generate(name, rem_x=-1, rem_y=-1):
     rom_12_bit(name, im)
 
 # generate rom from full bitmap image
-generate("flappyBird.jpg")
+generate("ezgif-3-bd679584b4.jpg")
