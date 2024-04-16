@@ -1,25 +1,34 @@
 `timescale 1 ns / 100 ps
 
-module tic_tac_toe (Ain, Bin, Start, Ack, Clk, Reset, 
-				Flag, Qi, Qc, Qd, A);
+module tic_tac_toe (Start, Ack, Clk, Reset, 
+				Xwins, Owins, Qi, Qs, Qx, Qo, Qd, P1s, P2s);
 
-input [11:0] Ain, Bin;
 input Start, Ack, Clk, Reset;
-output Flag;  // Flag FF
-output Qi, Qc, Qd;
-output [11:0] A;
+
+output Qi, Qs, Qx, Qo, Qd;   // States
+output [11:0] P1s;           // Player 1 score
+output [11:0] P2s;           // Player 2 score
+output Xwins;  				 // Flag for when X wins
+output Owins;  				 // Flag for when O wins
+
 
 // Rest are wire by default
-reg [11:0] A, B;
-reg [2:0] state;
-reg Flag;
+reg [4:0] state;			 // States
+reg [2:0] Xcounter;			 // Keeps track of how many moves X has played
+reg {2:0} Ocounter;			 // Keeps track of how many moves O has played *MIGHT NOT NEED THIS
+reg Xwins;					 // Flag for when X wins
+reg Owins;					 // Flag for when O wins
+
+reg board [0:2] [0:2]		 // 2D array that is 3 X 3 with each cell holding a single bit
 
 localparam
-INI	= 3'b001,
-ADJ	= 3'b010,
-DONE = 3'b100;
+INI	 = 5'b00001,
+STA  = 5'b00010,
+XTU	 = 5'b00100,
+OTU  = 5'b01000,
+DONE = 5'b10000;
 
-assign {Qd, Qc, Qi} = state;
+assign {Qd, Qo, Qx, Qs, Qi} = state;
 
 always @(posedge Clk, posedge Reset) 
 
@@ -27,42 +36,53 @@ always @(posedge Clk, posedge Reset)
     if (Reset)
        begin
           state <= INI;
-	      A <= 12'bXXXXXXXXXXXX;        // to avoid recirculating mux controlled by Reset
-	      B <= 12'bXXXXXXXXXXXX;	    // to avoid recirculating mux controlled by Reset 
-		  Flag <= 1'bX;                 // to avoid ...
+	      P1s <= 12'bXXXXXXXXXXXX;      // to avoid recirculating mux controlled by Reset
+	      P2s <= 12'bXXXXXXXXXXXX;	    // to avoid recirculating mux controlled by Reset 
+          Xcounter <= 3'bXXX;           // to avoid recirculating mux controlled by Reset
+          Ocounter <= 3'bXXX;           // to avoid recirculating mux controlled by Reset
 	    end
     else
        begin
          (* full_case, parallel_case *)
          case (state)
-	        INI	: 
+	        INI	: // Show Board on screen and reset scores for each player
 	          begin
 		         // state transitions in the control unit
 		         if (Start)
-		           state <= ADJ;
+		           state <= STA;
 		         // RTL operations in the DPU (Data Path Unit) 
-		           A <= Ain;
-		           B <= Bin;
-		           Flag <= 0;
+		           P1s <= 0;
+		           P2s <= 0;
 	          end
-	        ADJ	:  // ** TODO **  complete RTL Operations and State Transitions
+	        STA	:  // Clear Board and Reset counter registers for O and X turns
 	          begin
 		         // state transitions in the control unit
-				 if ((A == B) || ((A < B) && (Flag == 1)))
-				 	state <= DONE;
-				 else 
-				 	state <= ADJ;
+				 state <= XTU;
 		         // RTL operations in the Data Path 		           
-
-				 if ((A < B) && (Flag == 0))
-				 	A <= A + 100;
-				
-				 if (A > B)
-					begin
-						Flag <= 1;
-						A <= A - 10;
-					end			 
+				 Xcounter <= 0;	
+				 Ocounter <= 0;	 
  	          end
+			XTU	:  // X's turn and check if winner
+			   begin
+				// state transitions in the control unit
+				if ((Xcounter == 4) || (Xwins == 1) || (Owins == 1))
+					state <= Done;
+				else 
+					state <= OTU;
+				// RTL operations in the Data Path 		           
+				Xcounter <= Xcounter + 1;		 
+			   end
+			OTU	:  // O's turn and check if winner
+			   begin
+				// state transitions in the control unit
+				if ((Xwins == 1) || (Owins == 1))
+					state <= Done;
+				else 
+					state <= XTU;
+				// RTL operations in the Data Path 		           
+				Xcounter <= 0;	
+				Ocounter <= 0;	 
+			   end
 	        DONE	:
 	          begin  
 		         // state transitions in the control unit
