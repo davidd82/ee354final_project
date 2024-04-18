@@ -73,7 +73,7 @@ always @(posedge Clk, posedge Reset)
 				if(counter[0])
 					state <= OTU;
 				// RTL operations in the Data Path 		           
-				if(Cbtn) begin
+				if(Ubtn) begin
 					board[pos] <= 1;
 					counter <= counter + 1;
 					if((board[0] == board[1] == board[2]) || (board[3] == board[4] == board[5]) || (board[6] == board[7] == board[8]) 
@@ -83,28 +83,12 @@ always @(posedge Clk, posedge Reset)
 						P1s <= P1s + 1;
 					end
 				end
-				if(Lbtn) begin
-					case (pos)
-						0: pos <= 2;
-						3: pos <= 5;
-						6: pos <= 8;
-						default: pos <= pos - 1;
-					endcase
-				end
 				if(Rbtn) begin
 					case (pos)
 						2: pos <= 0;
 						5: pos <= 3;
 						8: pos <= 6;
 						default: pos <= pos + 1;
-					endcase
-				end
-				if(Ubtn) begin
-					case (pos)
-						0: pos <= 6;
-						1: pos <= 7;
-						2: pos <= 8;
-						default: pos <= pos - 3;
 					endcase
 				end
 				if(Dbtn) begin
@@ -124,7 +108,7 @@ always @(posedge Clk, posedge Reset)
 				if (~counter[0])
 					state <= XTU;
 				// RTL operations in the Data Path
-				if(Cbtn)
+				if(Ubtn)
 					begin
 						board[pos] <= 0;
 						counter <= counter + 1;
@@ -135,28 +119,12 @@ always @(posedge Clk, posedge Reset)
 							P2s <= P2s + 1;
 						end
 					end
-				if(Lbtn) begin
-					case (pos)
-						0: pos <= 2;
-						3: pos <= 5;
-						6: pos <= 8;
-						default: pos <= pos - 1;
-					endcase
-				end
 				if(Rbtn) begin
 					case (pos)
 						2: pos <= 0;
 						5: pos <= 3;
 						8: pos <= 6;
 						default: pos <= pos + 1;
-					endcase
-				end
-				if(Ubtn) begin
-					case (pos)
-						0: pos <= 6;
-						1: pos <= 7;
-						2: pos <= 8;
-						default: pos <= pos - 3;
 					endcase
 				end
 				if(Dbtn) begin
@@ -173,7 +141,7 @@ always @(posedge Clk, posedge Reset)
 		        // state transitions in the control unit
 		        if (Ack)
 		        	state <= INI;
-				if (Cbtn)
+				if (Lbtn)
 					state <= STA;
 	          end
 			default:
