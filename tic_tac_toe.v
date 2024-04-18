@@ -1,10 +1,10 @@
 `timescale 1 ns / 100 ps
 
-module tic_tac_toe (Start, Ack, Clk, Reset, Lbtn, Rbtn, Ubtn, Dbtn, Cbtn,
+module tic_tac_toe (Start, Ack, Clk, Reset, BtnL, BtnR, BtnU, BtnD, BtnC,
 				Xwins, Owins, Qi, Qs, Qx, Qo, Qd, P1s, P2s);
 
 input Start, Ack, Clk, Reset;
-input Lbtn, Rbtn, Ubtn, Dbtn, Cbtn; // Inputs from the buttons
+input BtnL, BtnR, BtnU, BtnD, BtnC; // Inputs from the buttons
 
 output Qi, Qs, Qx, Qo, Qd;   // States
 output [11:0] P1s;           // Player 1 score
@@ -73,7 +73,7 @@ always @(posedge Clk, posedge Reset)
 				if(counter[0])
 					state <= OTU;
 				// RTL operations in the Data Path 		           
-				if(Ubtn) begin
+				if(BtnU) begin
 					board[pos] <= 1;
 					counter <= counter + 1;
 					if((board[0] == board[1] == board[2]) || (board[3] == board[4] == board[5]) || (board[6] == board[7] == board[8]) 
@@ -83,7 +83,7 @@ always @(posedge Clk, posedge Reset)
 						P1s <= P1s + 1;
 					end
 				end
-				if(Rbtn) begin
+				if(BtnR) begin
 					case (pos)
 						2: pos <= 0;
 						5: pos <= 3;
@@ -91,7 +91,7 @@ always @(posedge Clk, posedge Reset)
 						default: pos <= pos + 1;
 					endcase
 				end
-				if(Dbtn) begin
+				if(BtnD) begin
 					case (pos)
 						6: pos <= 0;
 						7: pos <= 1;
@@ -108,7 +108,7 @@ always @(posedge Clk, posedge Reset)
 				if (~counter[0])
 					state <= XTU;
 				// RTL operations in the Data Path
-				if(Ubtn)
+				if(BtnU)
 					begin
 						board[pos] <= 0;
 						counter <= counter + 1;
@@ -119,7 +119,7 @@ always @(posedge Clk, posedge Reset)
 							P2s <= P2s + 1;
 						end
 					end
-				if(Rbtn) begin
+				if(BtnR) begin
 					case (pos)
 						2: pos <= 0;
 						5: pos <= 3;
@@ -127,7 +127,7 @@ always @(posedge Clk, posedge Reset)
 						default: pos <= pos + 1;
 					endcase
 				end
-				if(Dbtn) begin
+				if(BtnD) begin
 					case (pos)
 						6: pos <= 0;
 						7: pos <= 1;
@@ -141,7 +141,7 @@ always @(posedge Clk, posedge Reset)
 		        // state transitions in the control unit
 		        if (Ack)
 		        	state <= INI;
-				if (Lbtn)
+				if (BtnL)
 					state <= STA;
 	          end
 			default:

@@ -1,4 +1,4 @@
-module ezgif-1-8e15ee87a8_rom
+module tictactoeboard_rom
 	(
 		input wire clk,
 		input wire [9:0] row,
