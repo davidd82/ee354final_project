@@ -1,9 +1,9 @@
 `timescale 1 ns / 100 ps
 
-module tic_tac_toe (Start, Ack, Clk, Reset, BtnL, BtnR, BtnU, BtnD, BtnC,
+module tic_tac_toe (Start, Ack, Clk, reset, BtnL, BtnR, BtnU, BtnD, BtnC,
 				Xwins, Owins, Qi, Qs, Qx, Qo, Qd, P1s, P2s);
 
-input Start, Ack, Clk, Reset;
+input Start, Ack, Clk, reset;
 input BtnL, BtnR, BtnU, BtnD, BtnC; // Inputs from the buttons
 
 output Qi, Qs, Qx, Qo, Qd;   // States
@@ -34,10 +34,10 @@ UNK  = 5'bXXXXX;
 
 assign {Qi, Qs, Qx, Qo, Qd} = state;
 
-always @(posedge Clk, posedge Reset) 
+always @(posedge Clk, posedge reset) 
 
   begin  : CU_n_DU
-    if (Reset)
+    if (reset)
        begin
           state <= INI;
 	      P1s <= 12'bXXXXXXXXXXXX;      // to avoid recirculating mux controlled by Reset

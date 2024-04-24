@@ -72,9 +72,9 @@ module ee354_detour_top         // Note: This is almost similat to the top (and 
 	wire			board_clk, sys_clk;
 	wire [1:0]		ssdscan_clk;
 	reg [26:0]	    DIV_CLK;
-	wire 			L_Rbar;
- 	wire q_I, q_R1, q_R12, q_R123, q_L1, q_L12, q_L123;
-	wire GLL, GL, GR, GRR;		
+	wire 			BtnL, BtnR, BtnU, BtnD, BtnC;
+ 	wire Qi, Qs, Qx, Qo, Qd;
+	wire Xwins, Owins;		
 	reg [6:0]	SSD; // we are planning to produce SSD in an always block, hence we declared it as reg. It is not a physical register
 	wire [6:0]	SSD0, SSD1, SSD2, SSD3;
 	reg [6:0]	SSD_DIRECTION;
@@ -128,19 +128,18 @@ assign QuadSpiFlashCS = 1'b1;
 //------------
 // INPUT: SWITCHES & BUTTONS
 	// SW0 is our L_Rbar here
-	assign L_Rbar = SW0;
+	assign BtnL = BtnL;
+	assign BtnR = BtnR;
+	assign BtnU = BtnU;
+	assign BtnD = BtnD;
 	
-
 //------------
 // Instatiate the core design with some instance label (here SM1)
 // notice that we maintained same names in top design and inner core design for
 // several items such as q_I for convenience
 	
-	ee354_detour_sm SM1( .Clk(sys_clk), .reset(reset), .L_Rbar(L_Rbar), .q_I(q_I), 
-								.q_R1(q_R1), .q_R12(q_R12), .q_R123(q_R123), 
-								.q_L1(q_L1), .q_L12(q_L12), .q_L123(q_L123),
-								.GLL(GLL), .GL(GL), .GR(GR), .GRR(GRR)
-								);		
+	tic_tac_toe SM1(.Clk(sys_clk), .reset(reset), .BtnL(BtnL), .BtnR(BtnR), .BtnU(BtnU), .BtnD(BtnD), .BtnC(BtnC),
+						.Xwins(Xwins), .Owins(Owins), .Qi(Qi), .Qs(Qs), .Qx(Qx), .Qo(Qo), .Qd(Qd), .P1s(P1s), .P2s(P2s));		
 
 //------------
 // OUTPUT: LEDS
@@ -162,9 +161,9 @@ assign QuadSpiFlashCS = 1'b1;
 	localparam SSD_OFF  = 7'b1111111;  // pattern to turn off the middle two SSDs
 	
 	// select the direction here
-	always @ (L_Rbar)
+	always @ (BtnL)
 	begin
-		case(L_Rbar)
+		case(BtnL)
 			1'b1: SSD_DIRECTION = L_SSDLTR;
 			1'b0: SSD_DIRECTION = R_SSDLTR;
 		endcase
@@ -176,24 +175,20 @@ assign QuadSpiFlashCS = 1'b1;
 	// convert the 1-hot state to a hex-number for easy display
 	
 	localparam QI_NUM    =	4'b0000;
-	localparam QL1_NUM   =	4'b0001;
-	localparam QL12_NUM  =	4'b0010;
-	localparam QL123_NUM = 	4'b0011;
-	localparam QR1_NUM 	 =  4'b0100;
-	localparam QR12_NUM  = 	4'b0101;
-	localparam QR123_NUM =	4'b0110;
+	localparam QS_NUM   =	4'b0001;
+	localparam QX_NUM  =	4'b0010;
+	localparam QO_NUM = 	4'b0011;
+	localparam QD_NUM 	 =  4'b0100;
 	localparam UNKNOWN	 = 	4'b1111;
-	always @ ( q_I, q_L1, q_L12, q_L123, q_R1, q_R12, q_R123 )
+	always @ ( Qi, Qs, Qx, Qo, Qd)
 	begin : ONE_HOT_TO_HEX
 		(* full_case, parallel_case *) // avoid prioritization (Verilog 2001 standard)
-		case ( {q_I, q_L1, q_L12, q_L123, q_R1, q_R12, q_R123} )		
-			7'b1000000: state_num = QI_NUM;
-			7'b0100000: state_num = QL1_NUM;
-			7'b0010000: state_num = QL12_NUM;
-			7'b0001000: state_num = QL123_NUM;			
-			7'b0000100: state_num = QR1_NUM;
-			7'b0000010: state_num = QR12_NUM;
-			7'b0000001: state_num = QR123_NUM;	
+		case ( {Qi, Qs, Qx, Qo, Qd} )		
+			5'b10000: state_num = QI_NUM;
+			5'b01000: state_num = QS_NUM;
+			5'b00100: state_num = QX_NUM;
+			5'b00010: state_num = QO_NUM;			
+			5'b00001: state_num = QD_NUM;
 			default:    state_num = UNKNOWN;
 		endcase
 	end
