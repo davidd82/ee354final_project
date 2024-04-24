@@ -84,6 +84,7 @@ module ee354_detour_top         // Note: This is almost similat to the top (and 
 // Disable the three memories so that they do not interfere with the rest of the design.
 assign QuadSpiFlashCS = 1'b1;
 	
+	
 //------------
 // CLOCK DIVISION
 
