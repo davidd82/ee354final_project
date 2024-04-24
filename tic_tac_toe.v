@@ -19,15 +19,17 @@ reg [3:0] counter;			 // Keeps track of number of moves played
 reg [3:0] pos;					 // Position in the board
 reg Xwins;					 // Flag for when X wins
 reg Owins;					 // Flag for when O wins
+reg [11:0] P1s;
+reg [11:0] P2s;
 
-reg board [0:8]		 // array to store game board with each cell holding a single bit
+reg board [0:8];	 // array to store game board with each cell holding a single bit
 
 localparam
 INI	 = 5'b00001,
 STA  = 5'b00010,
 XTU	 = 5'b00100,
 OTU  = 5'b01000,
-DONE = 5'b10000;
+DONE = 5'b10000,
 UNK  = 5'bXXXXX;
 
 assign {Qi, Qs, Qx, Qo, Qd} = state;
@@ -69,7 +71,7 @@ always @(posedge Clk, posedge Reset)
 			   begin
 				// state transitions in the control unit
 				if (counter == 9 || Xwins)
-					state <= Done;
+					state <= DONE;
 				if(counter[0])
 					state <= OTU;
 				// RTL operations in the Data Path 		           
@@ -104,7 +106,7 @@ always @(posedge Clk, posedge Reset)
 			   begin
 				// state transitions in the control unit
 				if (counter == 9)
-					state <= Done;
+					state <= DONE;
 				if (~counter[0])
 					state <= XTU;
 				// RTL operations in the Data Path
@@ -150,4 +152,4 @@ always @(posedge Clk, posedge Reset)
     end 
   end
  
-endmodule  
+endmodule 
