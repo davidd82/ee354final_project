@@ -143,10 +143,10 @@ assign QuadSpiFlashCS = 1'b1;
 
 //------------
 // OUTPUT: LEDS
-	assign {LD7,LD6} = {GLL, GLL};
-	assign {LD5,LD4} = {GL, GL};
-	assign {LD3,LD2} = {GR, GR};
-	assign {LD1,LD0} = {GRR, GRR};
+	// assign {LD7,LD6} = {GLL, GLL};
+	// assign {LD5,LD4} = {GL, GL};
+	// assign {LD3,LD2} = {GR, GR};
+	// assign {LD1,LD0} = {GRR, GRR};
 	// set unused LEDs to "off" state by driving them to zeros (because the LEDs are connected in sourcing mode)
 	assign {LD15, LD14, LD13, LD12, LD11, LD10, LD9, LD8} = 8'b00000000;
 	
