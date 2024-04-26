@@ -14,22 +14,23 @@ module block_controller(
 	
 	//these two values dictate the center of the block, incrementing and decrementing them leads the block to move in certain directions
 	reg [9:0] xpos, ypos;
+	wire [11:0] boardColor;
+	wire [11:0] xoColor;
 	
-	parameter RED   = 12'b1111_0000_0000;
-	
-	tictactoeboard_rom tttb(.clk(mastClk), .row(hCount), .col(vCount), .color_data(background));
+	tictactoeboard_rom tttb(.clk(mastClk), .row(hCount), .col(vCount), .color_data(boardColor));
+	x_rom xSym(.clk(mastClk), .row(hCount), .col(vCount), .color_data(xoColor));
 	/*when outputting the rgb value in an always block like this, make sure to include the if(~bright) statement, as this ensures the monitor 
 	will output some data to every pixel and not just the images you are trying to display*/
 	always@ (*) begin
     	if(~bright )	//force black if not inside the display area
 			rgb = 12'b0000_0000_0000;
-		else if (xo_fill) 
-			rgb = RED; 
+		else if (xo_fill)
+			rgb = xoColor; 
 		else	
 			rgb=background;
 	end
-		//the +-5 for the positions give the dimension of the block (i.e. it will be 10x10 pixels)
-	// assign xo_fill=vCount>=(ypos-5) && vCount<=(ypos+5) && hCount>=(xpos-5) && hCount<=(xpos+5);
+		//the +-30 for the positions give the dimension of the XO symbol (60x60 pixels)
+	assign xo_fill=vCount>=(ypos-30) && vCount<=(ypos+30) && hCount>=(xpos-30) && hCount<=(xpos+30);
 	
 	always@(posedge clk, posedge rst) 
 	begin
@@ -48,26 +49,33 @@ module block_controller(
 			corresponds to ~(783,515).  
 		*/
 			if(right) begin
-				xpos<=xpos+2; //change the amount you increment to make the speed faster 
+				xpos<=xpos+150; //change the amount you increment to make the speed faster 
 				if(xpos==800) //these are rough values to attempt looping around, you can fine-tune them to make it more accurate- refer to the block comment above
 					xpos<=150;
 			end
 			else if(left) begin
-				xpos<=xpos-2;
+				xpos<=xpos-150;
 				if(xpos==150)
 					xpos<=800;
 			end
 			else if(up) begin
-				ypos<=ypos-2;
+				ypos<=ypos-150;
 				if(ypos==34)
 					ypos<=514;
 			end
 			else if(down) begin
-				ypos<=ypos+2;
+				ypos<=ypos+150;
 				if(ypos==514)
 					ypos<=34;
 			end
 		end
+	end
+
+	always@(posedge clk, posedge rst) begin
+		if(rst)
+			background <= 12'b1111_1111_1111;
+		else 
+			background <= boardColor;
 	end
 	
 endmodule

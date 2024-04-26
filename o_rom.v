@@ -1,4 +1,4 @@
-module ezgif-1-0002aa92d0_rom
+module o_rom
 	(
 		input wire clk,
 		input wire [5:0] row,
