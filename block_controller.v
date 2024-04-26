@@ -2,6 +2,7 @@
 
 module block_controller(
 	input clk, //this clock must be a slow enough clock to view the changing positions of the objects
+	input mastClk,
 	input bright,
 	input rst,
 	input up, input down, input left, input right,
@@ -9,25 +10,26 @@ module block_controller(
 	output reg [11:0] rgb,
 	output reg [11:0] background
    );
-	wire block_fill;
+	wire xo_fill;
 	
 	//these two values dictate the center of the block, incrementing and decrementing them leads the block to move in certain directions
 	reg [9:0] xpos, ypos;
 	
 	parameter RED   = 12'b1111_0000_0000;
 	
+	tictactoeboard_rom tttb(.clk(mastClk), .row(hCount), .col(vCount), .color_data(background));
 	/*when outputting the rgb value in an always block like this, make sure to include the if(~bright) statement, as this ensures the monitor 
 	will output some data to every pixel and not just the images you are trying to display*/
 	always@ (*) begin
     	if(~bright )	//force black if not inside the display area
 			rgb = 12'b0000_0000_0000;
-		else if (block_fill) 
+		else if (xo_fill) 
 			rgb = RED; 
 		else	
 			rgb=background;
 	end
 		//the +-5 for the positions give the dimension of the block (i.e. it will be 10x10 pixels)
-	assign block_fill=vCount>=(ypos-5) && vCount<=(ypos+5) && hCount>=(xpos-5) && hCount<=(xpos+5);
+	assign xo_fill=vCount>=(ypos-5) && vCount<=(ypos+5) && hCount>=(xpos-5) && hCount<=(xpos+5);
 	
 	always@(posedge clk, posedge rst) 
 	begin

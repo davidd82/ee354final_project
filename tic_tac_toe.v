@@ -1,9 +1,9 @@
 `timescale 1 ns / 100 ps
 
-module tic_tac_toe (Start, Ack, Clk, reset, BtnL, BtnR, BtnU, BtnD, BtnC,
+module tic_tac_toe (Clk, reset, BtnL, BtnR, BtnU, BtnD, BtnC,
 				Xwins, Owins, Qi, Qs, Qx, Qo, Qd, P1s, P2s);
 
-input Start, Ack, Clk, reset;
+input Clk, reset;
 input BtnL, BtnR, BtnU, BtnD, BtnC; // Inputs from the buttons
 
 output Qi, Qs, Qx, Qo, Qd;   // States
@@ -51,8 +51,7 @@ always @(posedge Clk, posedge reset)
 	        INI	: // Show Board on screen and reset scores for each player
 	          begin
 		        // state transitions in the control unit
-		        if (Start)
-		          state <= STA;
+				state <= STA;
 		        // RTL operations in the DPU (Data Path Unit) 
 				P1s <= 0;
 				P2s <= 0;
@@ -141,8 +140,6 @@ always @(posedge Clk, posedge reset)
 	        DONE	:
 	          begin  
 		        // state transitions in the control unit
-		        if (Ack)
-		        	state <= INI;
 				if (BtnL)
 					state <= STA;
 	          end
