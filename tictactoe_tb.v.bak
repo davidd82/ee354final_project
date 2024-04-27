@@ -34,6 +34,42 @@ module tictactoe_similuation_tb;
 
 	reg [4:0] state;			 // States
     reg [3:0] counter;			 // Keeps track of number of moves played
+    //////////////////////////////////////////////////////////////////////////////////
+// Author:			Shideh Shahidi, Bilal Zafar, Gandhi Puvvada
+// Create Date:   02/25/08, 10/13/08
+// File Name:		ee201_GCD_tb.v 
+// Description: 
+//
+//
+// Revision: 		2.1
+// Additional Comments:  
+// 10/13/2008 Clock Enable (CEN) has been added by Gandhi
+// 3/1/2010 Signal names are changed in line with the divider_verilog design
+//////////////////////////////////////////////////////////////////////////////////
+`timescale 1ns / 1ps
+
+module tictactoe_similuation_tb;
+
+	// Inputs
+	reg Clk, CEN;
+	reg reset;
+	reg BtnL;
+    reg BtnR;
+	reg BtnU;
+	reg BtnD;
+	reg BtnC;
+
+
+	// Outputs
+	wire [11:0] P1s, P2s;
+	wire Qi;
+	wire Qs;
+	wire Qx;
+	wire Qo;
+    wire Qd;
+
+	reg [4:0] state;			 // States
+    reg [3:0] counter;			 // Keeps track of number of moves played
     reg [3:0] pos;					 // Position in the board
     reg Xwins;					 // Flag for when X wins
     reg Owins;					 // Flag for when O wins
@@ -148,5 +184,7 @@ module tictactoe_similuation_tb;
 			endcase
 		end
  
-    
+      
 endmodule
+
+
