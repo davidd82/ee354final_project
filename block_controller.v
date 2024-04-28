@@ -48,12 +48,11 @@ module block_controller(
 		else if (xo_fill) begin
 			case (xoTurn)
 				4'b0000: rgb = x1Color;
-				4'b0001: rgb = x2Color;
-				4'b0010: rgb = x3Color;
-				4'b0011: rgb = o1Color;
-				4'b0100: rgb = o2Color;
+				4'b0001: rgb = o1Color;
+				4'b0010: rgb = x2Color;
+				4'b0011: rgb = o2Color;
+				4'b0100: rgb = x3Color;
 				4'b0101: rgb = o3Color;
-				default: rgb = boardColor;
 			endcase
 			end
 		else if (xoTurn > 4'b000 && x1_fill)
@@ -127,20 +126,20 @@ module block_controller(
 						x1ypos<=ypos;
 					end
 					4'b0001: begin
-						x2xpos<=xpos;
-						x2ypos<=ypos;
-					end
-					4'b0010: begin
-						x3xpos<=xpos;
-						x3ypos<=ypos;
-					end
-					4'b0011: begin
 						o1xpos<=xpos;
 						o1ypos<=ypos;
 					end
-					4'b0100: begin
+					4'b0010: begin
+						x2xpos<=xpos;
+						x2ypos<=ypos;
+					end
+					4'b0011: begin
 						o2xpos<=xpos;
 						o2ypos<=ypos;
+					end
+					4'b0100: begin
+						x3xpos<=xpos;
+						x3ypos<=ypos;
 					end
 					4'b0101: begin
 						o3xpos<=xpos;
